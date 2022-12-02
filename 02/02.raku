@@ -1,50 +1,51 @@
 use v6.d;
 use Test;
 
+# rock = A/X = 1
+# paper = B/Y = 2
+# scissors = C/Z = 3
+
+my %myScore = 'X' => 1, 'Y' => 2, 'Z' => 3;
+
+constant WIN = 6;
+constant DRAW = 3;
+constant LOOSE = 0;
+
 # rock < paper < scissors < rock
-# rock = A = X = 1
-# paper = B = Y = 2
-# scissors = C = Z = 3
-# lost = 0, draw = 3, win = 6
-
-my %reactionS = 'X' => 1, 'Y' => 2, 'Z' => 3;
-
-my %roundS = 'A' => { 'X' => 3, 'Y' => 6, 'Z' => 0 },
-          'B' => { 'X' => 0, 'Y' => 3, 'Z' => 6 },
-          'C' => { 'X' => 6, 'Y' => 0, 'Z' => 3 };
+my %roundScore =
+        'A' => { 'X' => DRAW,  'Y' => WIN,   'Z' => LOOSE },
+        'B' => { 'X' => LOOSE, 'Y' => DRAW,  'Z' => WIN   },
+        'C' => { 'X' => WIN,   'Y' => LOOSE, 'Z' => DRAW  };
 
 sub do02 ($fname, &chooseMy) {
-    my @lines = $fname.IO.lines;
-
     my Int $score = 0;
 
-    for @lines -> $line {
-
+    for $fname.IO.lines -> $line {
         my @words = $line.words;
         my $other = @words[0];
-        my $my = &chooseMy(@words[1], $other);
-        $score += %reactionS{$my} + %roundS{$other}{$my};
 
+        my $my = &chooseMy($other, @words[1]);
+
+        $score += %myScore{$my} + %roundScore{$other}{$my}
     }
 
     return $score;
 }
 
-sub chooseMy_1($in, $_) {
-    return $in;
-}
+sub chooseMy_1($_, $in) { $in } # in is what to do
 
 is do02('02/02.input.test', &chooseMy_1), 15;
 say do02('02/02.input', &chooseMy_1); #10624
 
-# X = loose, Y = draw, Z = win
+my %i2a = 'X' => LOOSE, 'Y' => DRAW, 'Z' => WIN;
 
-my %strat = 'A' => { 'X' => 'Z', 'Y' => 'X', 'Z' => 'Y' },
-          'B' => { 'X' => 'X', 'Y' => 'Y', 'Z' => 'Z' },
-          'C' => { 'X' => 'Y', 'Y' => 'Z', 'Z' => 'X' };
-
-sub chooseMy_2($in, $other) {
-    return %strat{$other}{$in};
+sub chooseMy_2($other, $in) { # in is what to achieve
+    my $toAchieve = %i2a{$in};
+    for %roundScore{$other}.kv -> $action, $result {
+        if ($result == $toAchieve) {
+            return $action
+        }
+    }
 }
 
 is do02('02/02.input.test', &chooseMy_2), 12;
