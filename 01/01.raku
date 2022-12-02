@@ -11,7 +11,7 @@ sub do01 ($fname, $best) {
             @elfCals.push($calCnt);
             $calCnt = 0;
         } else {
-            $calCnt += Numeric($line);
+            $calCnt += +$line;
         }
     }
     @elfCals.push($calCnt);
@@ -20,6 +20,6 @@ sub do01 ($fname, $best) {
 }
 
 is do01('01/01.input.test', 1), 24000;
-say do01('01/01.input', 1);
+say do01('01/01.input', 1); #75501
 is do01('01/01.input.test', 3), 45000;
-say do01('01/01.input', 3);
+say do01('01/01.input', 3); #215594
