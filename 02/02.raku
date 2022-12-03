@@ -18,7 +18,7 @@ my %roundScore =
         'C' => { 'X' => WIN,   'Y' => LOOSE, 'Z' => DRAW  };
 
 sub do02 ($fname, &chooseMy) {
-    my Int $score = 0;
+    my $score = 0;
 
     for $fname.IO.lines -> $line {
         my @words = $line.words;
@@ -34,8 +34,8 @@ sub do02 ($fname, &chooseMy) {
 
 sub chooseMy_1($_, $in) { $in } # in is what to do
 
-is do02('02/02.input.test', &chooseMy_1), 15;
-say do02('02/02.input', &chooseMy_1); #10624
+is do02('02.input.test', &chooseMy_1), 15;
+say do02('02.input', &chooseMy_1); #10624
 
 my %i2a = 'X' => LOOSE, 'Y' => DRAW, 'Z' => WIN;
 
@@ -48,5 +48,5 @@ sub chooseMy_2($other, $in) { # in is what to achieve
     }
 }
 
-is do02('02/02.input.test', &chooseMy_2), 12;
-say do02('02/02.input', &chooseMy_2); #14060
+is do02('02.input.test', &chooseMy_2), 12;
+say do02('02.input', &chooseMy_2); #14060
