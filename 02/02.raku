@@ -29,7 +29,7 @@ sub do02 ($fname, &chooseMy) {
         $score += %myScore{$my} + %roundScore{$other}{$my}
     }
 
-    return $score;
+    $score;
 }
 
 sub chooseMy_1($_, $in) { $in } # in is what to do

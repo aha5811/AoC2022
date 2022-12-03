@@ -16,7 +16,7 @@ sub do01 ($fname, $best) {
     }
     @calsPerElf.push($calCnt);
 
-    return [+] @calsPerElf.sort.reverse[^$best]
+    [+] @calsPerElf.sort.reverse[^$best]
 }
 
 is do01('01.input.test', 1), 24000;
