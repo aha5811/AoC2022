@@ -1,6 +1,8 @@
 use v6.d;
 use Test;
 
+#https://adventofcode.com/2022/day/1
+
 sub do ($fname, $best) {
 
     my Int @calsPerElf;

@@ -1,6 +1,8 @@
 use v6.d;
 use Test;
 
+#https://adventofcode.com/2022/day/4
+
 sub do (Str $fname, &countIf) {
     my $ret = 0;
 

@@ -1,6 +1,8 @@
 use v6.d;
 use Test;
 
+#https://adventofcode.com/2022/day/2
+
 # rock = A/X = 1
 # paper = B/Y = 2
 # scissors = C/Z = 3

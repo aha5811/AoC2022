@@ -1,6 +1,8 @@
 use v6.d;
 use Test;
 
+#https://adventofcode.com/2022/day/3
+
 sub doP1 (Str $fname) of Int {
     my Int $prioSum = 0;
 
