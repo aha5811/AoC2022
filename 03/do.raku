@@ -1,7 +1,7 @@
 use v6.d;
 use Test;
 
-sub do03p1 (Str $fname) of Int {
+sub doP1 (Str $fname) of Int {
     my Int $prioSum = 0;
 
     for $fname.IO.lines -> $line {
@@ -17,24 +17,24 @@ sub do03p1 (Str $fname) of Int {
 
 sub findDupes($first, $second) {
     my @ret;
-    for $first.comb -> $c {
-        if $second.contains($c) {
-            @ret.append($c)
+    for $first.comb -> $char {
+        if $second.contains($char) {
+            @ret.append($char)
         }
     }
     @ret
 }
 
-sub prio (Str $c) of Int {
+sub prio (Str $char) of Int {
     # a = 97 -> 1 (-96)
     # A = 65 -> 27 (-38)
-    $c.ord - ($c eq $c.uc ?? 38 !! 96)
+    $char.ord - ($char eq $char.uc ?? 38 !! 96)
 }
 
-is do03p1('03.input.test'), 157;
-say do03p1('03.input');
+is doP1('input.test'), 157;
+say doP1('input'); #8053
 
-sub do03p2 ($fname, $groupSize) {
+sub doP2 ($fname, $groupSize) {
     my Int $badgeSum = 0;
 
     my @group;
@@ -57,5 +57,5 @@ sub findBadges (@group) {
     @ret
 }
 
-is do03p2('03.input.test', 3), 70;
-say do03p2('03.input', 3);
+is doP2('input.test', 3), 70;
+say doP2('input', 3); #2425

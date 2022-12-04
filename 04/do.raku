@@ -1,7 +1,7 @@
 use v6.d;
 use Test;
 
-sub do04 (Str $fname, &countIf) {
+sub do (Str $fname, &countIf) {
     my $ret = 0;
 
     my &toRange = -> $_ { $_.split('-') };
@@ -23,13 +23,13 @@ sub countIfp1 ($range1, $range2) {
     &contains($range1, $range2) || &contains($range2, $range1)
 }
 
-is do04('04.input.test', &countIfp1), 2;
-say do04('04.input', &countIfp1);
+is do('input.test', &countIfp1), 2;
+say do('input', &countIfp1); #538
 
 sub countIfp2 ($range1, $range2) {
     # partial overlap = not disjunct
     !($range1[1] < $range2[0] || $range2[1] < $range1[0])
 }
 
-is do04('04.input.test', &countIfp2), 4;
-say do04('04.input', &countIfp2);
+is do('input.test', &countIfp2), 4;
+say do('input', &countIfp2); #792

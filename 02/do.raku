@@ -17,7 +17,7 @@ my %roundScore =
         'B' => { 'X' => LOOSE, 'Y' => DRAW,  'Z' => WIN   },
         'C' => { 'X' => WIN,   'Y' => LOOSE, 'Z' => DRAW  };
 
-sub do02 ($fname, &chooseMy) {
+sub do ($fname, &chooseMy) {
     my $score = 0;
 
     for $fname.IO.lines -> $line {
@@ -32,14 +32,14 @@ sub do02 ($fname, &chooseMy) {
     $score;
 }
 
-sub chooseMy_1($_, $in) { $in } # in is what to do
+sub chooseMyP1($_, $in) { $in } # in is what to do
 
-is do02('02.input.test', &chooseMy_1), 15;
-say do02('02.input', &chooseMy_1); #10624
+is do('input.test', &chooseMyP1), 15;
+say do('input', &chooseMyP1); #10624
 
 my %i2a = 'X' => LOOSE, 'Y' => DRAW, 'Z' => WIN;
 
-sub chooseMy_2($other, $in) { # in is what to achieve
+sub chooseMyP2($other, $in) { # in is what to achieve
     my $toAchieve = %i2a{$in};
     for %roundScore{$other}.kv -> $action, $result {
         if ($result == $toAchieve) {
@@ -48,5 +48,5 @@ sub chooseMy_2($other, $in) { # in is what to achieve
     }
 }
 
-is do02('02.input.test', &chooseMy_2), 12;
-say do02('02.input', &chooseMy_2); #14060
+is do('input.test', &chooseMyP2), 12;
+say do('input', &chooseMyP2); #14060
