@@ -10,20 +10,17 @@ sub do (Str $fname, $n) {
     my @m;
     for $line.comb {
         @m.push($_);
-        if isOk(@m, $n) {
-            return $pos
-        }
         if @m.elems > $n {
             @m.splice(0, 1)
+        }
+        if @m.elems == $n && isDupeFree(@m) {
+            return $pos + 1
         }
         $pos++
     }
 }
 
-sub isOk(@arr, $n) {
-    if @arr.elems < $n {
-        return False
-    }
+sub isDupeFree(@arr) {
     for @arr {
         if count(@arr, $_) > 1 {
             return False
@@ -53,7 +50,7 @@ is do('input.test.5', 4), 11, 'p1 test5';
     is $res, 1566, 'p1';
 }
 
-is do('input.test.1', 14), 19, 'p2 test1'; #fails but rest is correct??
+is do('input.test.1', 14), 19, 'p2 test1';
 is do('input.test.2', 14), 23, 'p2 test2';
 is do('input.test.3', 14), 23, 'p2 test3';
 is do('input.test.4', 14), 29, 'p2 test4';
