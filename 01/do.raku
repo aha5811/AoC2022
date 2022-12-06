@@ -7,13 +7,13 @@ sub do ($fname, $best) {
 
     my Int @calsPerElf;
 
-    my $calCnt = 0;
+    my Int $calCnt;
     for $fname.IO.lines -> $line {
-        if $line == '' {
+        if $line eq '' {
             @calsPerElf.push($calCnt);
-            $calCnt = 0
+            $calCnt = 0;
         } else {
-            $calCnt += +$line
+            $calCnt += +$line;
         }
     }
     @calsPerElf.push($calCnt);
@@ -21,7 +21,16 @@ sub do ($fname, $best) {
     [+] @calsPerElf.sort.reverse[^$best]
 }
 
-is do('input.test', 1), 24000;
-say do('input', 1); #75501
-is do('input.test', 3), 45000;
-say do('input', 3); #215594
+is do('input.test', 1), 24000, 'p1 test';
+{
+    my $res = do('input', 1);
+    say 'p1 = ', $res;
+    is $res, 75501, 'p1';
+}
+
+is do('input.test', 3), 45000, 'p2 test';
+{
+    my $res = do('input', 3);
+    say 'p2 = ', $res;
+    is $res, 215594, 'p2';
+}

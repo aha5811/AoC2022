@@ -9,10 +9,10 @@ sub do (Str $fname, &doMove) {
     my @moves;
 
     {
-        my $moveRex = rx/"move "(\d+)" from "(\d+)" to "(\d+)/;
+        my $moveRex = / 'move ' (\d+) ' from ' (\d+) ' to ' (\d+) /;
 
-        my &toMove = -> $line {
-            my @groups = ($line ~~ $moveRex).values;
+        my &toMove = {
+            my @groups = ($_ ~~ $moveRex).values;
             { n => @groups[0], from => @groups[1] - 1, to => @groups[2] - 1 }
         }
 
@@ -28,16 +28,15 @@ sub do (Str $fname, &doMove) {
     }
 
     # 1 2 3 4 .. n
-    my $nOfStacks = [max] @stacksConfigLines.pop.split(' ');
+    my $nOfStacks = @stacksConfigLines.pop.words.reverse.first;
 
     my @stacks[$nOfStacks];
     {
-        my $rex = rx/(\s ** 3 | \[\S\])[\s(\s ** 3 | \[\S\])]*/;
-        # ___|[X]_...
+        my $rex = / [ \s? (\s ** 3 | '['<:Lu>']') ]+ /; # ___ or [X]
         while @stacksConfigLines {
             my $pos = 0;
             for (@stacksConfigLines.pop ~~ $rex).values -> $s {
-                if ($s.trim !eq "") {
+                if $s !~~ /^\s+$/ { # is not whitespace
                     my $crate = $s.substr(1, 1);
                     @stacks[$pos].push($crate);
                 }
@@ -46,34 +45,41 @@ sub do (Str $fname, &doMove) {
         }
     }
 
-    for @moves -> %move { &doMove(@stacks, %move) }
+    for @moves { &doMove(@stacks, $_) }
 
     [~] @stacks.map(-> @_ { @_[@_.end] })
     # join topmost (last) element of each stack
 }
 
-sub doMoveP1 (@stacks, %m) {
-    for ^%m<n> {
-        my $crate = @stacks[%m<from>].pop;
-        @stacks[%m<to>].push($crate);
+sub doMoveP1 (@stacks, %move) {
+    for ^%move<n> {
+        my $crate = @stacks[%move<from>].pop;
+        @stacks[%move<to>].push($crate);
     }
 }
 
-is do('input.test', &doMoveP1), 'CMZ';
-say do('input', &doMoveP1); #VCTFTJQCG
+is do('input.test', &doMoveP1), 'CMZ', 'p1 test';
+{
+    my $res = do('input', &doMoveP1);
+    say 'p1 = ', $res;
+    is $res, 'VCTFTJQCG', 'p1';
+}
 
-sub doMoveP2 (@stacks, %m) {
+sub doMoveP2 (@stacks, %move) {
     my @grabStack;
-    for ^%m<n> {
-        my $crate = @stacks[%m<from>].pop;
+    for ^%move<n> {
+        my $crate = @stacks[%move<from>].pop;
         @grabStack.push($crate);
     }
     while @grabStack {
         my $crate = @grabStack.pop;
-        @stacks[%m<to>].push($crate);
+        @stacks[%move<to>].push($crate);
     }
 }
 
-is do('input.test', &doMoveP2), 'MCD';
-say do('input', &doMoveP2); #GCFGLDNJZ
-
+is do('input.test', &doMoveP2), 'MCD', 'p2 test';
+{
+    my $res = do('input', &doMoveP2);
+    say 'p2 = ', $res;
+    is $res, 'GCFGLDNJZ', 'p2';
+}

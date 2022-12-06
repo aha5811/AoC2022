@@ -4,13 +4,11 @@ use Test;
 #https://adventofcode.com/2022/day/3
 
 sub doP1 (Str $fname) of Int {
-    my Int $prioSum = 0;
+    my Int $prioSum;
 
     for $fname.IO.lines -> $line {
         my $half = $line.chars / 2;
-        my $first = $line.substr(0, $half);
-        my $second = $line.substr($half);
-
+        my ($first, $second) = $line.substr(0, $half), $line.substr($half);
         $prioSum += prio(findDupes($first, $second)[0]);
     }
 
@@ -18,13 +16,13 @@ sub doP1 (Str $fname) of Int {
 }
 
 sub findDupes($first, $second) {
-    my @ret;
+    my @dupes;
     for $first.comb -> $char {
         if $second.contains($char) {
-            @ret.append($char)
+            @dupes.append($char)
         }
     }
-    @ret
+    @dupes
 }
 
 sub prio (Str $char) of Int {
@@ -33,11 +31,15 @@ sub prio (Str $char) of Int {
     $char.ord - ($char eq $char.uc ?? 38 !! 96)
 }
 
-is doP1('input.test'), 157;
-say doP1('input'); #8053
+is doP1('input.test'), 157, 'p1 test';
+{
+    my $res = doP1('input');
+    say 'p1 = ', $res;
+    is $res, 8053, 'p1';
+}
 
 sub doP2 ($fname, $groupSize) {
-    my Int $badgeSum = 0;
+    my Int $badgeSum;
 
     my @group;
     for $fname.IO.lines -> $line {
@@ -59,5 +61,9 @@ sub findBadges (@group) {
     @ret
 }
 
-is doP2('input.test', 3), 70;
-say doP2('input', 3); #2425
+is doP2('input.test', 3), 70, 'p2 test';
+{
+    my $res = doP2('input', 3);
+    say 'p2 = ', $res;
+    is $res, 2425, 'p2';
+}
