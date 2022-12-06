@@ -9,14 +9,14 @@ sub do (Str $fname, $n) {
     my $line = $fname.IO.lines.first;
     my @m;
     for $line.comb {
+        $pos++;
         @m.push($_);
         if @m.elems > $n {
             @m.splice(0, 1)
         }
         if @m.elems == $n && isDupeFree(@m) {
-            return $pos + 1
+            return $pos
         }
-        $pos++
     }
 }
 
