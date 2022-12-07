@@ -9,16 +9,16 @@ sub readFS (Str $fname) {
 
     @lines.pop; # remove cd /
 
-    my %fs = :D, N => '/'; # :D = D => True
+    my %fs = :D; # = D => True
 
     #`[
-    each file is a %
-        N -> name (not needed)
-        S -> size
-        D -> True/nil (isDirectory)
-        P -> parent Directory (only set in directories)
+    each file is a % with
+        S -> size (initially only set for files)
+        D -> True ("isDirectory", only set for directories)
+        P -> parent directory (only set for directories)
     the contents of dirs are added as key-values like
         filename -> %
+    root % is a dir without parent
     ]
 
     my %cd := %fs; # pointer to current dir
@@ -33,8 +33,7 @@ sub readFS (Str $fname) {
             } # else ... ls is default action
         } else {
             my $n = @words[1];
-            my %f = N => $n;
-            %cd{$n} = %f;
+            %cd{$n} = my %f;
             if $first eq "dir" {
                 %f<D> = True;
                 %f<P> = %cd;
@@ -70,8 +69,7 @@ sub getDirs(%dir) {
             @ret.append(getDirs($v))
         }
     }
-    @ret.push(%dir);
-    @ret
+    @ret.push(%dir)
 }
 
 my $p1maxSize = 100000;

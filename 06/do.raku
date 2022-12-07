@@ -39,24 +39,28 @@ sub count(@arr, $e) {
     $ret
 }
 
-is do('input.test.1', 4), 7, 'p1 test1';
-is do('input.test.2', 4), 5, 'p1 test2';
-is do('input.test.3', 4), 6, 'p1 test3';
-is do('input.test.4', 4), 10, 'p1 test4';
-is do('input.test.5', 4), 11, 'p1 test5';
+my $p1n = 4;
+
+is do('input.test.1', $p1n), 7, 'p1 test1';
+is do('input.test.2', $p1n), 5, 'p1 test2';
+is do('input.test.3', $p1n), 6, 'p1 test3';
+is do('input.test.4', $p1n), 10, 'p1 test4';
+is do('input.test.5', $p1n), 11, 'p1 test5';
 {
-    my $res = do('input', 4);
+    my $res = do('input', $p1n);
     say 'p1 = ', $res;
     is $res, 1566, 'p1';
 }
 
-is do('input.test.1', 14), 19, 'p2 test1';
-is do('input.test.2', 14), 23, 'p2 test2';
-is do('input.test.3', 14), 23, 'p2 test3';
-is do('input.test.4', 14), 29, 'p2 test4';
-is do('input.test.5', 14), 26, 'p2 test5';
+my $p2n = 14;
+
+is do('input.test.1', $p2n), 19, 'p2 test1';
+is do('input.test.2', $p2n), 23, 'p2 test2';
+is do('input.test.3', $p2n), 23, 'p2 test3';
+is do('input.test.4', $p2n), 29, 'p2 test4';
+is do('input.test.5', $p2n), 26, 'p2 test5';
 {
-    my $res = do('input', 14);
+    my $res = do('input', $p2n);
     say 'p2 = ', $res;
     is $res, 2265, 'p2';
 }
