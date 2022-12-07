@@ -3,84 +3,83 @@ use Test;
 
 #https://adventofcode.com/2022/day/7
 
-sub doP1 (Str $fname) {
-    my %fs = readFS($fname);
-
-    my @dirs = findDirs(%fs);
-
-    my Int $ret;
-    for @dirs {
-        my $size = $_<S>;
-        if $size <= 100000 {
-            $ret += $size
-        }
-    }
-    $ret
-}
-
-sub findDirs(%fs) {
-    my @ret;
-    for %fs.kv -> $k, $v {
-        if ($k.lc eq $k && $v<D>) {
-            @ret.append(findDirs($v))
-        }
-    }
-    @ret.push(%fs);
-    @ret
-}
-
 sub readFS (Str $fname) {
     my @lines = $fname.IO.lines;
     @lines = @lines.reverse;
-    @lines.pop;
-    # remove cd /
 
-    my %fs = D => True, N => '/';
-    my %t := %fs;
+    @lines.pop; # remove cd /
+
+    my %fs = :D, N => '/'; # :D = D => True
+
+    #`[
+    each file is a %
+        N -> name (not needed)
+        S -> size
+        D -> True/nil (isDirectory)
+        P -> parent Directory (only set in directories)
+    the contents of dirs are added as key-values like
+        filename -> %
+    ]
+
+    my %cd := %fs; # pointer to current dir
 
     while @lines {
-        my @line = @lines.pop.words;
-        my $first = @line[0];
+        my @words = @lines.pop.words;
+        my $first = @words[0];
         if $first eq "\$" {
-            if @line[1] eq "cd" {
-                my $to = @line[2];
-                if $to eq ".." {
-                    %t := %t<P>;
-                } else {
-                    %t := %t{$to};
-                }
-            }
-            # ls is default action
+            if @words[1] eq "cd" {
+                my $to = @words[2];
+                %cd := $to eq ".." ?? %cd<P> !! %cd{$to};
+            } # else ... ls is default action
         } else {
-            my $n = @line[1];
-            my %in = N => $n;
-            %t.push: $n => %in;
+            my $n = @words[1];
+            my %f = N => $n;
+            %cd{$n} = %f;
             if $first eq "dir" {
-                %in<D> = True;
-                %in<P> = %t;
-            } else {
-                %in<S> = +$first;
+                %f<D> = True;
+                %f<P> = %cd;
+            } else { # size
+                %f<S> = +$first;
             }
         }
     }
 
-    get-set-size(%fs);
+    compute-set-dir-sizes(%fs);
 
     %fs
 }
 
-sub get-set-size(%f) {
+sub compute-set-dir-sizes(%f) {
     if %f<S> {
         return %f<S>
     }
 
     my Int $size;
     for %f.kv -> $k, $v {
-        if ($k.lc eq $k) {
-            $size += get-set-size($v)
+        if ($k.lc eq $k) { # key is filename
+            $size += compute-set-dir-sizes($v)
         }
     }
     %f<S> = $size
+}
+
+sub getDirs(%dir) {
+    my @ret;
+    for %dir.kv -> $k, $v {
+        if ($k.lc eq $k && $v<D>) { # key is filename and value is dir
+            @ret.append(getDirs($v))
+        }
+    }
+    @ret.push(%dir);
+    @ret
+}
+
+my $p1maxSize = 100000;
+
+sub doP1 (Str $fname) {
+    my %fs = readFS($fname);
+
+    [+] getDirs(%fs).grep({ .<S> <= $p1maxSize }).map({ .<S> })
 }
 
 is doP1('input.test'), 95437, 'p1 test';
@@ -90,23 +89,15 @@ is doP1('input.test'), 95437, 'p1 test';
     is $res, 1915606, 'p1';
 }
 
+my ($p2total, $p2needed) = 70000000, 30000000;
+
 sub doP2(Str $fname) {
     my %fs = readFS($fname);
 
-    my ($total, $needed) = 70000000, 30000000;
-    my $free = $total - %fs<S>;
-    $needed -= $free;
+    my $free = $p2total - %fs<S>;
+    my $needed = $p2needed - $free;
 
-    my @dirs = findDirs(%fs);
-
-    my @okDirs;
-    for @dirs {
-        if $_<S> >= $needed {
-            @okDirs.push($_<S>)
-        }
-    }
-
-    [min] @okDirs
+    [min] getDirs(%fs).grep({ .<S> >= $needed }).map({ .<S> })
 }
 
 is doP2('input.test'), 24933642, 'p2 test';
