@@ -5,84 +5,80 @@ use Test;
 
 sub doP1 (Str $fname) {
     my @forest;
-    for $fname.IO.lines -> $line {
-        @forest.push($line.comb);
-    }
-    my ($x, $y) = @forest.elems, @forest[0].elems;
+    for $fname.IO.lines { @forest.push($_.comb) }
+    my ($xMax, $yMax) = @forest.elems, @forest[0].elems;
 
-    my Int $freeTrees;
+    my Int $freeCnt;
 
-    my Int $xx = 0;
-    for @forest -> @row {
-        my Int $yy = 0;
-        for @row -> $tree {
-            if isFreeOneEdge($tree, $xx, $yy) {
-                $freeTrees++
+    for [^$xMax] -> $x {
+        for [^$yMax] -> $y {
+            if isFreeOneEdge($x, $y) {
+                $freeCnt++
             }
-            $yy++
         }
-        $xx++
     }
 
-    sub isFreeOneEdge($height, $xx, $yy) {
-        # x < xx
+    sub isFreeOneEdge($x, $y) {
+        my $height = h($x, $y);
+        # xx < x
         {
-            my $ret = True;
-            for [$xx^...0] -> $xxx {
-                if h($xxx, $yy) >= $height {
-                    $ret = False;
+            my $isFree = True;
+            for [$x^...0] -> $xx {
+                if h($xx, $y) >= $height {
+                    $isFree = False;
                     last
                 }
             }
-            if $ret {
+            if $isFree {
                 return True
             }
         }
-        # x > xx
+        # xx > x
         {
-            my $ret = True;
-            for [$xx^...^$x] -> $xxx {
-                if h($xxx, $yy) >= $height {
-                    $ret = False;
+            my $isFree = True;
+            for [$x^...^$xMax] -> $xx {
+                if h($xx, $y) >= $height {
+                    $isFree = False;
                     last
                 }
             }
-            if $ret {
+            if $isFree {
                 return True
             }
         }
-        # y < yy
+        # yy < y
         {
-            my $ret = True;
-            for [$yy^...0] -> $yyy {
-                if h($xx, $yyy) >= $height {
-                    $ret = False;
+            my $isFree = True;
+            for [$y^...0] -> $yy {
+                if h($x, $yy) >= $height {
+                    $isFree = False;
                     last
                 }
             }
-            if $ret {
+            if $isFree {
                 return True
             }
         }
-        # y > yy
+        # yy > y
         {
-            my $ret = True;
-            for [$yy^...^$y] -> $yyy {
-                if h($xx, $yyy) >= $height {
-                    $ret = False;
+            my $isFree = True;
+            for [$y^...^$yMax] -> $yy {
+                if h($x, $yy) >= $height {
+                    $isFree = False;
                     last
                 }
             }
-            if $ret {
+            if $isFree {
                 return True
             }
         }
+
         False
     }
 
     sub h($x, $y) { @forest[$x][$y] }
 
-    $freeTrees
+    $freeCnt
 }
 
 is doP1('input.test'), 21, 'p1 test';
@@ -94,58 +90,60 @@ is doP1('input.test'), 21, 'p1 test';
 
 sub doP2 (Str $fname) {
     my @forest;
-    for $fname.IO.lines -> $line {
-        @forest.push($line.comb);
-    }
-    my ($x, $y) = @forest.elems, @forest[0].elems;
+    for $fname.IO.lines -> $line { @forest.push($line.comb) }
+    my ($xMax, $yMax) = @forest.elems, @forest[0].elems;
 
     my @scenicScores;
 
-    my Int $xx = 0;
-    for @forest -> @row {
-        my Int $yy = 0;
-        for @row -> $tree {
-            @scenicScores.push(scenicScore($tree, $xx, $yy));
-            $yy++
+    for [^$xMax] -> $x {
+        for [^$yMax] -> $y {
+            @scenicScores.push(scenicScore($x, $y));
         }
-        $xx++
     }
 
-    sub scenicScore($height, $xx, $yy) {
-        my Int $s = 1;
+    sub scenicScore($x, $y) {
+        my Int $ss = 1;
+
+        my $height = h($x, $y);
+
+        # xx < x
         {
             my $ps = 0;
-            for [$xx^...0] -> $xxx {
+            for [$x^...0] -> $xx {
                 $ps++;
-                if h($xxx, $yy) >= $height { last }
+                if h($xx, $y) >= $height { last }
             }
-            $s *= $ps;
+            $ss *= $ps;
         }
-        {
+        # xx > x
+        if $ss != 0 {
             my $ps = 0;
-            for [$xx^...^$x] -> $xxx {
+            for [$x^...^$xMax] -> $xx {
                 $ps++;
-                if h($xxx, $yy) >= $height { last }
+                if h($xx, $y) >= $height { last }
             }
-            $s *= $ps;
+            $ss *= $ps;
         }
-        {
+        # yy < y
+        if $ss != 0 {
             my $ps = 0;
-            for [$yy^...0] -> $yyy {
+            for [$y^...0] -> $yy {
                 $ps++;
-                if h($xx, $yyy) >= $height { last }
+                if h($x, $yy) >= $height { last }
             }
-            $s *= $ps;
+            $ss *= $ps;
         }
-        {
+        # yy > y
+        if $ss != 0 {
             my $ps = 0;
-            for [$yy^...^$y] -> $yyy {
+            for [$y^...^$yMax] -> $yy {
                 $ps++;
-                if h($xx, $yyy) >= $height { last }
+                if h($x, $yy) >= $height { last }
             }
-            $s *= $ps;
+            $ss *= $ps;
         }
-        $s
+
+        $ss
     }
 
     sub h($x, $y) { @forest[$x][$y] }
@@ -160,4 +158,4 @@ is doP2('input.test'), 8, 'p2 test';
     is $res, 331344, 'p2';
 }
 
-say 'took: ', (now - INIT now), 's';
+say 'took: ', (now - INIT now).round(0.1), 's';
