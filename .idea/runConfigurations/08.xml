@@ -8,7 +8,7 @@
     <PERL6_PARAMS />
     <DEBUG_PORT>9999</DEBUG_PORT>
     <START_SUSPENDED>false</START_SUSPENDED>
-    <LOG_TIMELINE_EVENTS>await,file,process,socket,start</LOG_TIMELINE_EVENTS>
+    <LOG_TIMELINE_EVENTS>thread</LOG_TIMELINE_EVENTS>
     <method v="2" />
   </configuration>
 </component>
