@@ -5,9 +5,7 @@ use Test;
 
 sub readFS (Str $fname) {
     my @lines = $fname.IO.lines;
-    @lines = @lines.reverse;
-
-    @lines.pop; # remove cd /
+    @lines.shift; # remove cd /
 
     my %fs = :D; # = D => True
 
@@ -24,7 +22,7 @@ sub readFS (Str $fname) {
     my %cd := %fs; # pointer to current dir
 
     while @lines {
-        my @words = @lines.pop.words;
+        my @words = @lines.shift.words;
         my $first = @words[0];
         if $first eq "\$" {
             if @words[1] eq "cd" {

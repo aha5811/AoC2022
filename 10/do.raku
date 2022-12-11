@@ -3,13 +3,13 @@ use Test;
 
 #https://adventofcode.com/2022/day/10
 
-sub doP1 (Str $fname) {
+sub doP1 (Str $fname, $withOutput = False) {
 
     my Int $ssSum;
 
     # checkpoints
-    my @cps = (20, 60, 100, 140, 180, 220).reverse;
-    my $cp = @cps.pop;
+    my @cps = (20, 60, 100, 140, 180, 220);
+    my $cp = @cps.shift;
 
     my Int $cycle = 0;
     my Int $X = 1;
@@ -17,6 +17,7 @@ sub doP1 (Str $fname) {
     my Int $ret;
 
     for $fname.IO.lines {
+        if $withOutput { say $_ }
         my @words = $_.words;
         if @words[0] eq 'noop' {
             check
@@ -26,13 +27,15 @@ sub doP1 (Str $fname) {
             $X += +@words[1]
         }
     }
+    if $withOutput { say $X }
 
     sub check {
         $cycle++;
+        if $withOutput { say $cycle,' ', $X }
         if $cycle == $cp {
             $ssSum += $cp * $X;
             if @cps {
-                $cp = @cps.pop
+                $cp = @cps.shift
             } else {
                 $ret = $ssSum
             }
@@ -42,7 +45,7 @@ sub doP1 (Str $fname) {
     $ret
 }
 
-doP1('input.test0');
+doP1('input.test0', True);
 
 is doP1('input.test'), 13140, 'p1 test';
 {
