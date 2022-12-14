@@ -4,8 +4,8 @@ use Test;
 #https://adventofcode.com/2022/day/8
 
 sub doP1 (Str $fname) {
-    my @forest is Array;
-    for $fname.IO.lines -> $line { @forest.push(Array.new($line.comb.map({ +$_ }))) }
+    my @forest;
+    for $fname.IO.lines { @forest.push($_.comb.map({ +$_ })) }
     my ($xMax, $yMax) = @forest.elems, @forest[0].elems;
 
     my Int $freeCnt;
@@ -89,8 +89,8 @@ is doP1('input.test'), 21, 'p1 test';
 }
 
 sub doP2 (Str $fname) {
-    my @forest is Array;
-    for $fname.IO.lines -> $line { @forest.push(Array.new($line.comb.map({ +$_ }))) }
+    my @forest;
+    for $fname.IO.lines { @forest.push($_.comb.map({ +$_ })) }
     my ($xMax, $yMax) = @forest.elems, @forest[0].elems;
 
     my @scenicScores;
