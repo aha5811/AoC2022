@@ -3,7 +3,7 @@ use Test;
 
 #https://adventofcode.com/2022/day/12
 
-sub do (Str $fname) {
+sub do (Str $fname, Bool $forP2 = False) {
 
     my Int $g = 'z'.ord - 'a'.ord + 1;
 
@@ -26,6 +26,8 @@ sub do (Str $fname) {
     my @nodes;
     my @edges;
     my %h; # manhattan distance as heuristics
+
+    sub height($x, $y) { @map[$x][$y] } # height for each point
 
     # find goal node, compute %h, find all nodes, find all edges
     {
@@ -52,8 +54,6 @@ sub do (Str $fname) {
 
         sub dist($x, $y) { sqrt(($x - @g[0])**2 + ($y - @g[1])**2) }
 
-        sub height($x, $y) { @map[$x][$y] } # height for each point
-
         sub addEdges($x, $y) {
             my $h = height($x, $y);
             checkAdd($x - 1, $y);
@@ -65,7 +65,7 @@ sub do (Str $fname) {
                 if $xx >= 0 && $xx < $xMax && $yy >= 0 && $yy < $yMax
                     && height($xx, $yy) <= $h + 1
                 {
-                        @edges.push([ toN($x, $y), toN($xx, $yy) ])
+                    @edges.push([ toN($x, $y), toN($xx, $yy) ])
                 }
             }
         }
@@ -98,13 +98,24 @@ sub do (Str $fname) {
 
         for getSucc($n) -> $c {
 
-            if @closed.first($c).Bool {
-                next
-            }
+            if @closed.first($c).Bool { next }
 
             my $inOpen = @open.first($c).Bool;
 
-            my $cCost = 1 + %cost{$n};
+            my $edgeCost = 1;
+            if ($forP2) {
+                # idea: edges between heights of 0-0 and -1-0 cost nothing
+                # lucky? that it works although %h could overestimate the actual cost
+                my ($nx, $ny) = $n.split('x').values;
+                my ($sx, $sy) = $c.split('x').values;
+                my $hn = height($nx, $ny);
+                my $hs = height($sx, $sy);
+                if ($hn == -1 && $hs == 0 || $hn == 0 && $hs == 0 || $hn == 0 && $hs == -1) {
+                    $edgeCost = 0
+                }
+            }
+
+            my $cCost = $edgeCost + %cost{$n};
 
             if $inOpen && $cCost >= %cost{$c} {
                 next
@@ -127,12 +138,13 @@ sub do (Str $fname) {
         @edges.grep({ $_[0] eq $n }).map({ $_[1] })
     }
 
+    # draw path on map
     my $n = $goal;
     loop {
         last if !%parent.EXISTS-KEY($n);
         my ($x, $y) = $n.split('x').values;
         @map[$x][$y] = '*';
-        $n := %parent{$n}
+        $n := %parent{$n};
     }
 
     out;
@@ -161,11 +173,14 @@ is do('input.test'), 31, 'p1 test';
     is $res, 352, 'p1';
 }
 
-say 'p1 took: ', (now - INIT now).round(0.1), 's'; # ~20s
+my $now = now;
+say 'p1 took: ', ($now - INIT now).round(0.1), 's'; # ~24s
 
-#is do('input.test'), 29, 'p2 test';
-#`{
-    my $res = do('input');
+is do('input.test', True), 29, 'p2 test';
+{
+    my $res = do('input', True);
     say 'p2 = ', $res;
-    is $res, 0, 'p2';
+    is $res, 345, 'p2';
 }
+
+say 'p2 took: ', (now - $now).round(0.1), 's'; # ~24s
