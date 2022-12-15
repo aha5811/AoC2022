@@ -1,14 +1,30 @@
 use v6.d;
 use Test;
 
-#https://adventofcode.com/2022/day/
+#https://adventofcode.com/2022/day/15
 
-sub do (Str $fname, Int $row) {
+sub doP1 (Str $fname, Int $row) {
 
+    my $in = readInput($fname);
+    my @sensors = $in[0];
+    my @beacons = $in[1];
+    my %s2range = $in[2];
+
+    my @covered = findCoveredX(@sensors, %s2range, $row);
+
+    my $ret = @covered.elems; # count
+
+    for @beacons.grep({ $_[1] == $row }).map({ $_[0] }) { # get all x coordinates of beacons in this y
+        if @covered.first($_) { $ret-- } # remove one covered space from x pos array
+    }
+
+    $ret
+}
+
+sub readInput(Str $fname) {
     my @sensors;
     my @beacons;
-    #my %s2b;
-    my %s2md;
+    my %s2range;
 
     # Sensor at x=2, y=18: closest beacon is at x=-2, y=15
     for $fname.IO.lines {
@@ -17,65 +33,73 @@ sub do (Str $fname, Int $row) {
         my @b = [ +@w[8], +@w[9] ];
 
         @sensors.push(@s);
-        @beacons.push(@b);
+        if !@beacons.first({ $_[0] == @b[0] && $_[1] == @b[1] }) { @beacons.push(@b) }
 
-        #%s2b{s(@s)} = @b;
-        %s2md{s(@s)} = md(@s, @b);
+        %s2range{s(@s)} = md(@s, @b);
     }
 
-    sub s(@x) of Str { @x[0]~'x'~@x[1] } # point to Str
-    sub md(@x, @y) { abs(@x[0] - @y[0]) + abs(@x[1] - @y[1]) } # manhattan distance
+    \( @sensors, @beacons, %s2range )
+}
 
-    say @sensors;
-    say @beacons;
-    #say %s2b;
-    say %s2md;
+sub s(@x) of Str { @x[0]~'x'~@x[1] } # point to Str
+sub md(@x, @y) { abs(@x[0] - @y[0]) + abs(@x[1] - @y[1]) } # manhattan distance
 
+sub findCoveredX(@sensors, %s2range, $row) {
+    my @covered;
+    for @sensors -> @s { @covered.append(findCoveredX1(@s, %s2range, $row)) }
+    @covered.unique; # remove duplicates
+}
+
+sub findCoveredX1(@s, %s2range, Int $y) {
+    my $x = @s[0];
+    my Int $range = %s2range{s(@s)};
     my @ret;
-
-    for @sensors -> @s { @ret.append(findCoveredX(@s, $row)) }
-
-    sub findCoveredX(@s, Int $y) {
-        my $x = @s[0];
-        my $md = %s2md{s(@s)};
-        my @ret;
-        if md([ $x, $y ], @s) <= $md {
-            @ret.push($x);
-            for (-1, +1) {
-                loop (my $xx = $x + $_ ;; $xx = $xx + $_) {
-                    last if md([$xx, $y], @s) > $md;
-                    @ret.push($xx)
-                }
+    if md([ $x, $y ], @s) <= $range { # nearest point with this y
+        @ret.push($x);
+        for (-1, +1) { # left, right
+            loop (my $xx = $x + $_ ;; $xx = $xx + $_) { # move away
+                last if md([$xx, $y], @s) > $range; #  break as soon as out of range
+                @ret.push($xx) # add as covered
             }
         }
-        say @s, ' with ', $md, ' sees ', @ret;
-        @ret
     }
+    @ret
+}
 
-    # remove duplicates
-    @ret = @ret.unique;
+is doP1('input.test', 10), 26, 'p1 test';
+{
+    my $res = doP1('input', 2000000);
+    say 'p1 = ', $res;
+    is $res, 4793062, 'p1';
+}
 
-    my $ret = @ret.elems;
+my $now = now;
+say 'p1 took: ', ($now - INIT now).round(0.1), 's'; # ~36s (throttled)
 
-    for @beacons.grep({ $_[1] == $row }).map({ $_[0] }).unique {
-        if @ret.first($_) {
-            $ret--
+my $p2multiplier = 4000000;
+
+sub doP2 (Str $fname, Int $min, Int $max) {
+
+    my $in = readInput($fname);
+    my @sensors = $in[0];
+    my %s2range = $in[2];
+
+    for [$min...$max] -> $row {
+        my @covered = findCoveredX(@sensors, %s2range, $row);
+        for [$min...$max] -> $x {
+            if @covered.first($x) !~~ Int {
+                return $x * $p2multiplier + $row
+            }
         }
     }
 
-    $ret
 }
 
-is do('input.test', 10), 26, 'p1 test';
-{
-    my $res = do('input', 2000000);
-    say 'p1 = ', $res;
-    is $res, 0, 'p1';
-}
-
-#is do('input.test', 0), 0, 'p2 test';
+is doP2('input.test', 0, 20), 56000011, 'p2 test';
 #`{
-    my $res = do('input', 0);
+    my $res = doP2('input', 0, 4000000);
     say 'p2 = ', $res;
     is $res, 0, 'p2';
 }
+
+say 'p2 took: ', (now - $now).round(0.1), 's';
