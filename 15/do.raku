@@ -44,21 +44,23 @@ sub readInput(Str $fname) {
 sub s(@x) of Str { @x[0]~'x'~@x[1] } # point to Str
 sub md(@x, @y) { abs(@x[0] - @y[0]) + abs(@x[1] - @y[1]) } # manhattan distance
 
-sub findCoveredX(@sensors, %s2range, $row) {
+sub findCoveredX(@sensors, %s2range, $row, $min = -Inf, $max = Inf) {
     my @covered;
-    for @sensors -> @s { @covered.append(findCoveredX1(@s, %s2range, $row)) }
-    @covered.unique; # remove duplicates
+    for @sensors -> @s {
+        @covered.append(findCoveredX1(@s, %s2range, $row, $min, $max));
+    }
+    @covered.unique
 }
 
-sub findCoveredX1(@s, %s2range, Int $y) {
+sub findCoveredX1(@s, %s2range, Int $y, $min, $max) {
     my $x = @s[0];
     my Int $range = %s2range{s(@s)};
     my @ret;
     if md([ $x, $y ], @s) <= $range { # nearest point with this y
-        @ret.push($x);
+        if $x >= $min && $x <= $max { @ret.push($x) }
         for (-1, +1) { # left, right
             loop (my $xx = $x + $_ ;; $xx = $xx + $_) { # move away
-                last if md([$xx, $y], @s) > $range; #  break as soon as out of range
+                last if $xx < $min || $xx > $max || md([$xx, $y], @s) > $range; #  break as soon as out of range
                 @ret.push($xx) # add as covered
             }
         }
@@ -74,7 +76,7 @@ is doP1('input.test', 10), 26, 'p1 test';
 }
 
 my $now = now;
-say 'p1 took: ', ($now - INIT now).round(0.1), 's'; # ~36s (throttled)
+say 'p1 took: ', ($now - INIT now).round(0.1), 's'; # ~34s
 
 my $p2multiplier = 4000000;
 
@@ -85,8 +87,8 @@ sub doP2 (Str $fname, Int $min, Int $max) {
     my %s2range = $in[2];
 
     for [$min...$max] -> $row {
-        my @covered = findCoveredX(@sensors, %s2range, $row);
-        for [$min...$max] -> $x {
+        my @covered = findCoveredX(@sensors, %s2range, $row, $min, $max);
+        for [$min ... $max] -> $x {
             if @covered.first($x) !~~ Int {
                 return $x * $p2multiplier + $row
             }
