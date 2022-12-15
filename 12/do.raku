@@ -174,7 +174,7 @@ is do('input.test'), 31, 'p1 test';
 }
 
 my $now = now;
-say 'p1 took: ', ($now - INIT now).round(0.1), 's'; # ~24s
+say 'p1 took: ', ($now - INIT now).round(0.1), 's'; # ~16s
 
 is do('input.test', True), 29, 'p2 test';
 {
@@ -183,4 +183,4 @@ is do('input.test', True), 29, 'p2 test';
     is $res, 345, 'p2';
 }
 
-say 'p2 took: ', (now - $now).round(0.1), 's'; # ~24s
+say 'p2 took: ', (now - $now).round(0.1), 's'; # ~17s
