@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="16" type="PERL6_RUN_CONFIGURATION" factoryName="Raku">
+    <SCRIPT_PATH>$PROJECT_DIR$/16/do.raku</SCRIPT_PATH>
+    <SCRIPT_ARGS />
+    <WORKING_DIRECTORY>$PROJECT_DIR$/16</WORKING_DIRECTORY>
+    <ENV_VARS />
+    <PASS_ENVIRONMENT>false</PASS_ENVIRONMENT>
+    <PERL6_PARAMS />
+    <DEBUG_PORT>9999</DEBUG_PORT>
+    <START_SUSPENDED>false</START_SUSPENDED>
+    <LOG_TIMELINE_EVENTS>await,file,process,socket,start</LOG_TIMELINE_EVENTS>
+    <method v="2" />
+  </configuration>
+</component>

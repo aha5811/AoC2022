@@ -11,14 +11,14 @@ sub do (Str $fname) {
 }
 
 is do('input.test'), 0, 'p1 test';
-{
+#`{
     my $res = do('input');
     say 'p1 = ', $res;
     is $res, 0, 'p1';
 }
 
-is do('input.test'), 0, 'p2 test';
-{
+#is do('input.test'), 0, 'p2 test';
+#`{
     my $res = do('input');
     say 'p2 = ', $res;
     is $res, 0, 'p2';
