@@ -90,15 +90,6 @@ sub do (Str $fname) {
         }
     }
 
-    sub d2p {
-        given $d {
-            when 'R' { return 0 }
-            when 'D' { return 1 }
-            when 'L' { return 2 }
-            when 'U' { return 3 }
-        }
-    }
-
     sub d2s {
         given $d {
             when 'R' { return '>' }
@@ -120,6 +111,15 @@ sub do (Str $fname) {
         }
     }
 
+    sub d2p {
+        given $d {
+            when 'R' { return 0 }
+            when 'D' { return 1 }
+            when 'L' { return 2 }
+            when 'U' { return 3 }
+        }
+    }
+
     # move to first free position
     go(1);
 
@@ -127,6 +127,8 @@ sub do (Str $fname) {
         if $_ ~~ Numeric { go($_) }
         else { turn($_) }
     }
+
+    out;
 
     1000 * ($y + 1) + 4 * ($x + 1) + d2p
 }
