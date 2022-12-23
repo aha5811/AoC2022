@@ -55,6 +55,10 @@ sub do (Str $fname) {
         @m[$x;$y] = d2s
     }
 
+    # this is slow because for each step(!) the range of 'all' next x or y values is computed
+    # we could create one range for each go cmd (but then we'd have to shift & push)
+    # or we compute only the next (wrapped-around) x or y value for each step
+
     sub go(Int $i) {
         for [^$i] {
             given $d {
