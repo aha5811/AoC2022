@@ -51,14 +51,18 @@ sub do (Str $fname, Bool $verbose = False) {
 
             my %newRobots;
             for @minerals -> $m {
-                my %f = %bp{$m};
-                if [&&] %f.kv.map({ %wares{$^a} >= $^b }) {
+
+                # TODO
+                # better decision making
+
+                my %costs = %bp{$m};
+                if [&&] %costs.kv.map({ %wares{$^a} >= $^b }) {
                     if $verbose {
-                        my $cost = join ' and ', %f.kv.map({ $^b ~ ' ' ~ $^a });
+                        my $cost = join ' and ', %costs.kv.map({ $^b ~ ' ' ~ $^a });
                         say 'Spend ', $cost, ' to start building a ',
                                 $m, '-collecting robot.';
                     }
-                    for %f.kv -> $am, $n { %wares{$am} -= $n }
+                    for %costs.kv -> $am, $n { %wares{$am} -= $n }
                     %newRobots{$m}++
                 }
             }
