@@ -1,7 +1,7 @@
 use v6.d;
 use Test;
 
-#https://adventofcode.com/2022/day/
+#https://adventofcode.com/2022/day/23
 
 sub do (Str $fname) {
 
