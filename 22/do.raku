@@ -10,8 +10,9 @@ use Test;
 sub do (Str $fname) {
 
     my @mlines;
-    my $width = 0;
     my @commands;
+
+    my $width = 0;
 
     for $fname.IO.lines {
         if $_ ~~ /<alnum>+/ {
