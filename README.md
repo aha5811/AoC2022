@@ -8,7 +8,7 @@ with Comma Community Edition > https://commaide.com/
 
 on MacOS Ventura with homebrew rakudo-star > https://rakudo.org/star/macos
 
-¯\_(ツ)_/¯
+¯\\_(ツ)_/¯
 
 https://www.raku.org/resources/
 
